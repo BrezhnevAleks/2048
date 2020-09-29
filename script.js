@@ -3,6 +3,9 @@ document.addEventListener("DOMContentLoaded", () => {
 
   let elements = [];
   let checkElements = [];
+  let score = 0;
+  let displayScore = document.querySelector(".score__value");
+  displayScore.textContent = score;
 
   //создаём игровое поле
   function createBoard() {
@@ -153,6 +156,7 @@ document.addEventListener("DOMContentLoaded", () => {
     color();
   }
 
+  // свайп вверх
   function goUp() {
     for (let i = 0; i < 4; i++) {
       let column = [
@@ -174,29 +178,32 @@ document.addEventListener("DOMContentLoaded", () => {
   }
 
   //объединяем в рядах при свайпе влево
-
   function rowPlusLeft() {
     for (let i = 0; i < 15; i++) {
       if (elements[i].innerHTML === elements[i + 1].innerHTML) {
-        let so =
+        let sumResult =
           Number(elements[i].innerHTML) + Number(elements[i + 1].innerHTML);
         elements[i + 1].innerHTML = "";
-        elements[i].innerHTML = so;
+        elements[i].innerHTML = sumResult;
+        score += sumResult;
+        displayScore.textContent = score;
+        win();
+        goLeft();
       }
       color();
     }
-    win();
   }
 
   //объединяем в рядах при свайпе вправо
-
   function rowPlusRight() {
     for (let i = 15; i > 0; i--) {
       if (elements[i].innerHTML === elements[i - 1].innerHTML) {
-        let so =
+        let sumResult =
           Number(elements[i].innerHTML) + Number(elements[i - 1].innerHTML);
-        elements[i - 1].innerHTML = so;
+        elements[i - 1].innerHTML = sumResult;
         elements[i].innerHTML = "";
+        score += sumResult;
+        displayScore.textContent = score;
         win();
         goRight();
       }
@@ -205,33 +212,35 @@ document.addEventListener("DOMContentLoaded", () => {
   }
 
   //объединяем в колонках при свайпе вверх
-
   function columnPlusUp() {
     for (let i = 0; i < 12; i++) {
       if (elements[i].innerHTML === elements[i + 4].innerHTML) {
-        let so =
+        let sumResult =
           Number(elements[i].innerHTML) + Number(elements[i + 4].innerHTML);
-        elements[i + 4].innerHTML = so;
+        elements[i + 4].innerHTML = sumResult;
         elements[i].innerHTML = "";
+        score += sumResult;
+        displayScore.textContent = score;
+        win();
+        goUp();
       }
       color();
     }
-    win();
   }
 
   //объединяем в колонках при свайпе вниз
-
   function columnPlusDown() {
     for (let i = 15; i > 3; i--) {
       if (elements[i].innerHTML === elements[i - 4].innerHTML) {
-        let so =
+        let sumResult =
           Number(elements[i].innerHTML) + Number(elements[i - 4].innerHTML);
-        elements[i - 4].innerHTML = so;
+        elements[i - 4].innerHTML = sumResult;
         elements[i].innerHTML = "";
+        score += sumResult;
+        displayScore.textContent = score;
         win();
         goDown();
       }
-
       color();
     }
   }
@@ -256,7 +265,6 @@ document.addEventListener("DOMContentLoaded", () => {
   }
 
   //проверка на проигрыш
-
   function gameOver() {
     let rowCheck = false;
     let columnCheck = false;
@@ -273,17 +281,19 @@ document.addEventListener("DOMContentLoaded", () => {
     if (zeros === 0) {
       for (let i = 0; i < 13; i++) {
         if (i % 4 === 0) {
-          for (let j = i; j < i + 2; j++) {
+          for (let j = i; j < i + 3; j++) {
             if (elements[j].innerHTML === elements[j + 1].innerHTML) {
               rowCheck = true;
             }
           }
         }
       }
-      for (let i = 0; i < 12; i += 4) {
-        for (let j = i; j < i + 2; j++) {
-          if (elements[j].innerHTML === elements[j + 4].innerHTML) {
-            columnCheck = true;
+      if (rowCheck === false) {
+        for (let i = 0; i < 12; i += 4) {
+          for (let j = i; j < i + 2; j++) {
+            if (elements[j].innerHTML === elements[j + 4].innerHTML) {
+              columnCheck = true;
+            }
           }
         }
       }
@@ -291,23 +301,23 @@ document.addEventListener("DOMContentLoaded", () => {
         let endScreen = document.querySelector(".end-game");
         endScreen.innerHTML = "<p>You Lose</p>";
         endScreen.style.display = "flex";
-        document.addEventListener("keyup", controlKeys);
+        document.removeEventListener("keyup", controlKeys);
       }
     }
   }
-
+  // проверка на победу
   function win() {
     for (let i = 0; i < 15; i++) {
       if (elements[i].innerHTML === "2048") {
         let endScreen = document.querySelector(".end-game");
         endScreen.innerHTML = "<p>You Win!</p>";
         endScreen.style.display = "flex";
-        document.addEventListener("keyup", controlKeys);
+        document.removeEventListener("keyup", controlKeys);
       }
     }
   }
-  // реакция на нажатие стрелок
 
+  // реакция на нажатие стрелок
   function controlKeys(e) {
     switch (e.keyCode) {
       case 37:
@@ -323,50 +333,47 @@ document.addEventListener("DOMContentLoaded", () => {
         keyDown();
         break;
       case 81:
-        payToLose();
+        pressToLose();
         break;
       case 87:
-        payToWin();
+        pressToWin();
         break;
     }
   }
   document.addEventListener("keyup", controlKeys);
 
-  //функции для нажатия на каждую из кнопок стрелок
+  //функции для нажатия кнопки стрелок
 
+  // вправо
   function keyRight() {
     goRight();
     rowPlusRight();
-    goRight();
-
     setTimeout(checkResult, 300);
   }
-
+  // влево
   function keyLeft() {
     goLeft();
     rowPlusLeft();
-    goLeft();
 
     setTimeout(checkResult, 300);
   }
 
+  // вверх
   function keyUp() {
     goUp();
     columnPlusUp();
-    goUp();
-
     setTimeout(checkResult, 300);
   }
 
+  // вниз
   function keyDown() {
     goDown();
     columnPlusDown();
-    goDown();
 
     setTimeout(checkResult, 300);
   }
 
-  function payToLose() {
+  function pressToLose() {
     elements[0].innerHTML = "4";
     elements[1].innerHTML = "4";
     elements[2].innerHTML = "4";
@@ -387,21 +394,21 @@ document.addEventListener("DOMContentLoaded", () => {
     gameOver();
   }
 
-  function payToWin() {
+  function pressToWin() {
     elements[0].innerHTML = "4";
-    elements[1].innerHTML = "1024";
+    elements[1].innerHTML = "16";
     elements[2].innerHTML = "4";
     elements[3].innerHTML = "2";
     elements[4].innerHTML = "16";
-    elements[5].innerHTML = "1024";
+    elements[5].innerHTML = "8";
     elements[6].innerHTML = "2";
     elements[7].innerHTML = "4";
     elements[8].innerHTML = "64";
-    elements[9].innerHTML = "2";
+    elements[9].innerHTML = "8";
     elements[10].innerHTML = "16";
-    elements[11].innerHTML = "8";
-    elements[12].innerHTML = "16";
-    elements[13].innerHTML = "32";
+    elements[11].innerHTML = "16";
+    elements[12].innerHTML = "128";
+    elements[13].innerHTML = "16";
     elements[14].innerHTML = "4";
     elements[15].innerHTML = "128";
     color();

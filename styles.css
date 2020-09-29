@@ -1,13 +1,43 @@
 body {
   position: relative;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  margin: 0;
+}
+.score-container {
+  display: block;
+  margin: 10px auto;
+  width: 250px;
+  padding: 0.5%;
+  color: #ffffff;
+  text-align: center;
+  border-radius: 10px;
+  background-color: #4d6d66;
+}
+
+.score__title {
+  margin: 0;
+}
+
+.score__value {
+  margin: 0;
+  margin-top: 5px;
+  font-size: 25px;
+}
+.game-field {
+  position: relative;
+  margin: 0 auto;
+  width: 808px;
+  height: 808px;
 }
 .game {
+  position: absolute;
   display: flex;
   flex-wrap: wrap;
-  position: absolute;
-  left: 400px;
-  width: 800px;
-  height: 800px;
+
+  width: 100%;
+  height: 100%;
   border: 4px solid black;
   background-color: gray;
 }
@@ -25,14 +55,13 @@ body {
   transition: 0.4s ease-out;
 }
 .end-game {
+  position: absolute;
   display: none;
   justify-content: center;
   align-items: center;
-  position: absolute;
-  left: 400px;
   z-index: 1000;
-  width: 800px;
-  height: 800px;
+  width: 100%;
+  height: 100%;
   border: 4px solid black;
   background-color: white;
   opacity: 0.7;
