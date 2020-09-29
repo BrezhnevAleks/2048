@@ -32,16 +32,16 @@ document.addEventListener("DOMContentLoaded", () => {
     let numberedElement = Math.floor(Math.random() * elements.length);
     if (Number(elements[numberedElement].innerHTML) === 0) {
       let chance = Math.floor(1 + Math.random() * 10);
-      console.log(chance);
       if (chance === 9) {
         elements[numberedElement].innerHTML = 4;
+        color();
         gameOver();
       } else {
         elements[numberedElement].innerHTML = 2;
+        color();
         gameOver();
       }
     } else generateNumber();
-    color();
   }
 
   // изменяем цвет секции для каждого числа, чтобы красиво было
@@ -271,7 +271,7 @@ document.addEventListener("DOMContentLoaded", () => {
     let winCheck = false;
     let zeros = 0;
     for (let i = 0; i < elements.length; i++) {
-      if (elements[i].innerHTML == 0) {
+      if (elements[i].innerHTML === "") {
         zeros++;
       }
       if (elements[i].innerHTML === "2048") {
@@ -289,11 +289,9 @@ document.addEventListener("DOMContentLoaded", () => {
         }
       }
       if (rowCheck === false) {
-        for (let i = 0; i < 12; i += 4) {
-          for (let j = i; j < i + 2; j++) {
-            if (elements[j].innerHTML === elements[j + 4].innerHTML) {
-              columnCheck = true;
-            }
+        for (let i = 0; i < 12; i++) {
+          if (elements[i].innerHTML === elements[i + 4].innerHTML) {
+            columnCheck = true;
           }
         }
       }
@@ -400,17 +398,17 @@ document.addEventListener("DOMContentLoaded", () => {
     elements[2].innerHTML = "4";
     elements[3].innerHTML = "2";
     elements[4].innerHTML = "16";
-    elements[5].innerHTML = "8";
+    elements[5].innerHTML = "128";
     elements[6].innerHTML = "2";
     elements[7].innerHTML = "4";
     elements[8].innerHTML = "64";
     elements[9].innerHTML = "8";
     elements[10].innerHTML = "16";
-    elements[11].innerHTML = "16";
+    elements[11].innerHTML = "2";
     elements[12].innerHTML = "128";
     elements[13].innerHTML = "16";
     elements[14].innerHTML = "4";
-    elements[15].innerHTML = "128";
+    elements[15].innerHTML = "2";
     color();
     win();
   }
