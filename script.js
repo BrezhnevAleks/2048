@@ -4,8 +4,10 @@ document.addEventListener("DOMContentLoaded", () => {
   let elements = [];
   let checkElements = [];
   let score = 0;
+  let stepBack = [];
+  let stepCount = 0;
   let displayScore = document.querySelector(".score__value");
-  displayScore.textContent = score;
+  displayScore.innerHTML = score;
 
   //создаём игровое поле
   function createBoard() {
@@ -19,11 +21,12 @@ document.addEventListener("DOMContentLoaded", () => {
 
     generateNumber();
     generateNumber();
+    rememberStep();
+    console.log(stepBack[--stepCount]);
+
     for (let i = 0; i < 16; i++) {
       checkElements.push(elements[i].innerHTML);
     }
-    console.log(checkElements);
-    console.log(elements.innerHTML);
   }
   createBoard();
 
@@ -93,12 +96,7 @@ document.addEventListener("DOMContentLoaded", () => {
   function goRight() {
     for (let i = 0; i < 16; i++) {
       if (i % 4 === 0) {
-        let row = [
-          Number(elements[i].innerHTML),
-          Number(elements[i + 1].innerHTML),
-          Number(elements[i + 2].innerHTML),
-          Number(elements[i + 3].innerHTML),
-        ];
+        let row = getRow(i);
         let notNulls = row.filter((num) => num);
         let empty = 4 - notNulls.length;
         let nulls = Array(empty).fill("");
@@ -116,12 +114,7 @@ document.addEventListener("DOMContentLoaded", () => {
   function goLeft() {
     for (let i = 0; i < 16; i++) {
       if (i % 4 === 0) {
-        let row = [
-          Number(elements[i].innerHTML),
-          Number(elements[i + 1].innerHTML),
-          Number(elements[i + 2].innerHTML),
-          Number(elements[i + 3].innerHTML),
-        ];
+        let row = getRow(i);
         let notNulls = row.filter((num) => num);
         let empty = 4 - notNulls.length;
         let nulls = Array(empty).fill("");
@@ -138,12 +131,7 @@ document.addEventListener("DOMContentLoaded", () => {
   // свайп вниз
   function goDown() {
     for (let i = 0; i < 4; i++) {
-      let column = [
-        Number(elements[i].innerHTML),
-        Number(elements[i + 4].innerHTML),
-        Number(elements[i + 4 * 2].innerHTML),
-        Number(elements[i + 4 * 3].innerHTML),
-      ];
+      let column = getColumn(i);
       let notNulls = column.filter((num) => num);
       let empty = 4 - notNulls.length;
       let nulls = Array(empty).fill("");
@@ -159,12 +147,8 @@ document.addEventListener("DOMContentLoaded", () => {
   // свайп вверх
   function goUp() {
     for (let i = 0; i < 4; i++) {
-      let column = [
-        Number(elements[i].innerHTML),
-        Number(elements[i + 4].innerHTML),
-        Number(elements[i + 4 * 2].innerHTML),
-        Number(elements[i + 4 * 3].innerHTML),
-      ];
+      let column = getColumn(i);
+
       let notNulls = column.filter((num) => num);
       let empty = 4 - notNulls.length;
       let nulls = Array(empty).fill("");
@@ -176,17 +160,39 @@ document.addEventListener("DOMContentLoaded", () => {
     }
     color();
   }
+  // получить массив элементов в ряду
+  function getColumn(index) {
+    return [
+      Number(elements[index].innerHTML),
+      Number(elements[index + 4].innerHTML),
+      Number(elements[index + 4 * 2].innerHTML),
+      Number(elements[index + 4 * 3].innerHTML),
+    ];
+  }
+
+  // получить массив элементов в клонке
+  function getRow(index) {
+    return [
+      Number(elements[index].innerHTML),
+      Number(elements[index + 1].innerHTML),
+      Number(elements[index + 2].innerHTML),
+      Number(elements[index + 3].innerHTML),
+    ];
+  }
 
   //объединяем в рядах при свайпе влево
   function rowPlusLeft() {
     for (let i = 0; i < 15; i++) {
-      if (elements[i].innerHTML === elements[i + 1].innerHTML) {
+      if (
+        (i + 1) % 4 != 0 &&
+        elements[i].innerHTML === elements[i + 1].innerHTML
+      ) {
         let sumResult =
           Number(elements[i].innerHTML) + Number(elements[i + 1].innerHTML);
         elements[i + 1].innerHTML = "";
         elements[i].innerHTML = sumResult;
         score += sumResult;
-        displayScore.textContent = score;
+        displayScore.innerHTML = score;
         win();
         goLeft();
       }
@@ -197,13 +203,13 @@ document.addEventListener("DOMContentLoaded", () => {
   //объединяем в рядах при свайпе вправо
   function rowPlusRight() {
     for (let i = 15; i > 0; i--) {
-      if (elements[i].innerHTML === elements[i - 1].innerHTML) {
+      if (i % 4 != 0 && elements[i].innerHTML === elements[i - 1].innerHTML) {
         let sumResult =
           Number(elements[i].innerHTML) + Number(elements[i - 1].innerHTML);
         elements[i - 1].innerHTML = sumResult;
         elements[i].innerHTML = "";
         score += sumResult;
-        displayScore.textContent = score;
+        displayScore.innerHTML = score;
         win();
         goRight();
       }
@@ -220,7 +226,7 @@ document.addEventListener("DOMContentLoaded", () => {
         elements[i + 4].innerHTML = sumResult;
         elements[i].innerHTML = "";
         score += sumResult;
-        displayScore.textContent = score;
+        displayScore.innerHTML = score;
         win();
         goUp();
       }
@@ -237,7 +243,7 @@ document.addEventListener("DOMContentLoaded", () => {
         elements[i - 4].innerHTML = sumResult;
         elements[i].innerHTML = "";
         score += sumResult;
-        displayScore.textContent = score;
+        displayScore.innerHTML = score;
         win();
         goDown();
       }
@@ -261,7 +267,7 @@ document.addEventListener("DOMContentLoaded", () => {
     }
 
     console.log(checkElements);
-    check = true;
+    rememberStep();
   }
 
   //проверка на проигрыш
@@ -315,6 +321,29 @@ document.addEventListener("DOMContentLoaded", () => {
     }
   }
 
+  // шаг назад
+  function goBack() {
+    for (let i = 0; i < 16; i++) {
+      elements[i].innerHTML = stepBack[stepCount - 1][i];
+      color();
+    }
+    displayScore.innerHTML = stepBack[stepCount - 1][16];
+    score = Number(stepBack[stepCount - 1][16]);
+    stepBack.pop();
+    stepCount--;
+  }
+
+  //запомнить текущий шаг
+  function rememberStep() {
+    let step = [];
+    for (let i = 0; i < 16; i++) {
+      step.push(elements[i].innerHTML);
+    }
+    step.push(displayScore.innerHTML);
+    stepBack.push(step);
+    stepCount++;
+  }
+
   // реакция на нажатие стрелок
   function controlKeys(e) {
     switch (e.keyCode) {
@@ -336,6 +365,9 @@ document.addEventListener("DOMContentLoaded", () => {
       case 87:
         pressToWin();
         break;
+      case 66:
+        goBack();
+        break;
     }
   }
   document.addEventListener("keyup", controlKeys);
@@ -347,13 +379,15 @@ document.addEventListener("DOMContentLoaded", () => {
     goRight();
     rowPlusRight();
     setTimeout(checkResult, 300);
+    //rememberStep();
   }
+
   // влево
   function keyLeft() {
     goLeft();
     rowPlusLeft();
-
     setTimeout(checkResult, 300);
+    //rememberStep();
   }
 
   // вверх
@@ -361,14 +395,15 @@ document.addEventListener("DOMContentLoaded", () => {
     goUp();
     columnPlusUp();
     setTimeout(checkResult, 300);
+    //rememberStep();
   }
 
   // вниз
   function keyDown() {
     goDown();
     columnPlusDown();
-
     setTimeout(checkResult, 300);
+    // rememberStep();
   }
 
   function pressToLose() {
@@ -394,14 +429,14 @@ document.addEventListener("DOMContentLoaded", () => {
 
   function pressToWin() {
     elements[0].innerHTML = "4";
-    elements[1].innerHTML = "16";
-    elements[2].innerHTML = "4";
+    elements[1].innerHTML = "4";
+    elements[2].innerHTML = "16";
     elements[3].innerHTML = "2";
     elements[4].innerHTML = "16";
     elements[5].innerHTML = "128";
     elements[6].innerHTML = "2";
     elements[7].innerHTML = "4";
-    elements[8].innerHTML = "64";
+    elements[8].innerHTML = "4";
     elements[9].innerHTML = "8";
     elements[10].innerHTML = "16";
     elements[11].innerHTML = "2";
