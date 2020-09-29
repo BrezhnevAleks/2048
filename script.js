@@ -321,7 +321,7 @@ document.addEventListener("DOMContentLoaded", () => {
     }
   }
 
-  // шаг назад
+  // шаг назад (кнопка b)
   function goBack() {
     for (let i = 0; i < 16; i++) {
       elements[i].innerHTML = stepBack[stepCount - 1][i];
@@ -379,7 +379,6 @@ document.addEventListener("DOMContentLoaded", () => {
     goRight();
     rowPlusRight();
     setTimeout(checkResult, 300);
-    //rememberStep();
   }
 
   // влево
@@ -387,7 +386,6 @@ document.addEventListener("DOMContentLoaded", () => {
     goLeft();
     rowPlusLeft();
     setTimeout(checkResult, 300);
-    //rememberStep();
   }
 
   // вверх
@@ -395,7 +393,6 @@ document.addEventListener("DOMContentLoaded", () => {
     goUp();
     columnPlusUp();
     setTimeout(checkResult, 300);
-    //rememberStep();
   }
 
   // вниз
@@ -403,7 +400,6 @@ document.addEventListener("DOMContentLoaded", () => {
     goDown();
     columnPlusDown();
     setTimeout(checkResult, 300);
-    // rememberStep();
   }
 
   function pressToLose() {
