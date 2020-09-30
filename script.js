@@ -1,6 +1,6 @@
 document.addEventListener("DOMContentLoaded", () => {
-  const gameField = document.querySelector(".game");
-  const requiredColor = {
+  const GAME_FIELD = document.querySelector(".game");
+  const REQUIRED_COLOR = {
     "": "white",
     2: "gray",
     4: "orange",
@@ -14,6 +14,7 @@ document.addEventListener("DOMContentLoaded", () => {
     1024: "#33421f",
     2048: "#7a7c00",
   };
+
   let elements = [];
   let checkElements = [];
   let score = 0;
@@ -22,13 +23,13 @@ document.addEventListener("DOMContentLoaded", () => {
   let displayScore = document.querySelector(".score__value");
   displayScore.textContent = score;
 
-  //создаём игровое поле
+  // создаём игровое поле
   function createBoard() {
     for (let i = 0; i < 16; i++) {
       let element = document.createElement("div");
       element.textContent = "";
       changeColor(element);
-      gameField.appendChild(element);
+      GAME_FIELD.appendChild(element);
       elements.push(element);
     }
 
@@ -43,13 +44,12 @@ document.addEventListener("DOMContentLoaded", () => {
   }
   createBoard();
 
-  //добавляем новое значение в рандомное место
+  // добавляем новое значение в рандомное место
   function generateNumber() {
     let numberedElement = Math.floor(Math.random() * elements.length);
     if (Number(elements[numberedElement].textContent) === 0) {
       let chance = Math.floor(1 + Math.random() * 10);
       elements[numberedElement].textContent = chance === 9 ? 4 : 2;
-
       changeColor(elements[numberedElement]);
       gameOver();
     } else generateNumber();
@@ -57,7 +57,7 @@ document.addEventListener("DOMContentLoaded", () => {
 
   // изменяем цвет секции для каждого числа, чтобы красиво было
   function changeColor(element) {
-    element.style.backgroundColor = requiredColor[element.textContent];
+    element.style.backgroundColor = REQUIRED_COLOR[element.textContent];
   }
 
   // свайп вправо
@@ -100,12 +100,10 @@ document.addEventListener("DOMContentLoaded", () => {
       Number(elements[index + axis * 2].textContent),
       Number(elements[index + axis * 3].textContent),
     ];
-
     let notNulls = row.filter((num) => num);
     let empty = 4 - notNulls.length;
     let nulls = Array(empty).fill("");
     let newRow = direction ? nulls.concat(notNulls) : notNulls.concat(nulls);
-
     for (let j = 0; j < 4; j++) {
       if (elements[index + axis * j].textContent != newRow[j]) {
         elements[index + axis * j].textContent = newRow[j];
@@ -114,7 +112,7 @@ document.addEventListener("DOMContentLoaded", () => {
     }
   }
 
-  //объединяем в рядах при свайпе влево
+  // объединяем в рядах при свайпе влево
   function rowPlusLeft() {
     for (let i = 0; i < 15; i++) {
       if (
@@ -122,14 +120,13 @@ document.addEventListener("DOMContentLoaded", () => {
         elements[i].textContent === elements[i + 1].textContent
       ) {
         rowPlus(i, true, 1);
-        win();
         goLeft();
       }
     }
     rememberStep();
   }
 
-  //объединяем в рядах при свайпе вправо
+  // объединяем в рядах при свайпе вправо
   function rowPlusRight() {
     for (let i = 15; i > 0; i--) {
       if (
@@ -137,37 +134,34 @@ document.addEventListener("DOMContentLoaded", () => {
         elements[i].textContent === elements[i - 1].textContent
       ) {
         rowPlus(i, false, 1);
-        win();
         goRight();
       }
     }
     rememberStep();
   }
 
-  //объединяем в колонках при свайпе вверх
+  // объединяем в колонках при свайпе вверх
   function columnPlusUp() {
     for (let i = 0; i < 12; i++) {
       if (elements[i].textContent === elements[i + 4].textContent) {
         rowPlus(i, true, 4);
-        win();
         goUp();
       }
     }
     rememberStep();
   }
 
-  //объединяем в колонках при свайпе вниз
+  // объединяем в колонках при свайпе вниз
   function columnPlusDown() {
     for (let i = 15; i > 3; i--) {
       if (elements[i].textContent === elements[i - 4].textContent) {
         rowPlus(i, false, 4);
-        win();
         goDown();
       }
     }
     rememberStep();
   }
-
+  // объединение в колонках или в рядах
   function rowPlus(index, direction, rows) {
     let firstElement = Number(elements[index].textContent);
     let secondElement;
@@ -193,11 +187,12 @@ document.addEventListener("DOMContentLoaded", () => {
       changeColor(elements[index]);
       changeColor(elements[index - rows]);
     }
+    win();
     score += sumResult;
     displayScore.textContent = score;
   }
 
-  //проверка на изменение результата
+  // проверка на изменение результата
   function checkResult() {
     let check = true;
     for (let i = 0; i < 16; i++) {
@@ -215,7 +210,7 @@ document.addEventListener("DOMContentLoaded", () => {
     console.log(checkElements);
   }
 
-  //проверка на проигрыш
+  // проверка на проигрыш
   function gameOver() {
     let rowCheck = false;
     let columnCheck = false;
@@ -278,7 +273,7 @@ document.addEventListener("DOMContentLoaded", () => {
     stepCount--;
   }
 
-  //запомнить текущий шаг
+  // запомнить текущий шаг
   function rememberStep() {
     let step = [];
     for (let i = 0; i < 16; i++) {
@@ -318,9 +313,9 @@ document.addEventListener("DOMContentLoaded", () => {
         goBack();
         break;
     }
-
     setTimeout(checkResult, 300);
   }
+
   function pressToLose() {
     elements[0].textContent = "4";
     elements[1].textContent = "4";
@@ -343,8 +338,8 @@ document.addEventListener("DOMContentLoaded", () => {
   }
 
   function pressToWin() {
-    elements[0].textContent = "4";
-    elements[1].textContent = "4";
+    elements[0].textContent = "1024";
+    elements[1].textContent = "1024";
     elements[2].textContent = "16";
     elements[3].textContent = "2";
     elements[4].textContent = "16";
@@ -363,8 +358,4 @@ document.addEventListener("DOMContentLoaded", () => {
     win();
   }
   document.addEventListener("keyup", controlKeys);
-
-  //функции для нажатия кнопки стрелок
-
-  // вправо
 });
