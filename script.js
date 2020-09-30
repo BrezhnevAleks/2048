@@ -1,6 +1,19 @@
 document.addEventListener("DOMContentLoaded", () => {
   const gameField = document.querySelector(".game");
-
+  const requiredColor = {
+    "": "white",
+    2: "gray",
+    4: "orange",
+    8: "red",
+    16: "#6e3d04",
+    32: "green",
+    64: "purple",
+    128: "#189ec0",
+    256: "#344d6e",
+    512: "#df5555",
+    1024: "#33421f",
+    2048: "#7a7c00",
+  };
   let elements = [];
   let checkElements = [];
   let score = 0;
@@ -44,24 +57,7 @@ document.addEventListener("DOMContentLoaded", () => {
 
   // изменяем цвет секции для каждого числа, чтобы красиво было
   function changeColor(element) {
-    let requiredColor = {
-      "": "white",
-      2: "gray",
-      4: "orange",
-      8: "red",
-      16: "#6e3d04",
-      32: "green",
-      64: "purple",
-      128: "#189ec0",
-      256: "#344d6e",
-      512: "#df5555",
-      1024: "#33421f",
-      2048: "#7a7c00",
-    };
-
-    {
-      element.style.backgroundColor = requiredColor[element.textContent];
-    }
+    element.style.backgroundColor = requiredColor[element.textContent];
   }
 
   // свайп вправо
@@ -125,18 +121,12 @@ document.addEventListener("DOMContentLoaded", () => {
         (i + 1) % 4 != 0 &&
         elements[i].textContent === elements[i + 1].textContent
       ) {
-        let sumResult =
-          Number(elements[i].textContent) + Number(elements[i + 1].textContent);
-        elements[i + 1].textContent = "";
-        changeColor(elements[i + 1]);
-        elements[i].textContent = sumResult;
-        changeColor(elements[i]);
-        score += sumResult;
-        displayScore.textContent = score;
+        rowPlus(i, true, 1);
         win();
         goLeft();
       }
     }
+    rememberStep();
   }
 
   //объединяем в рядах при свайпе вправо
@@ -146,54 +136,65 @@ document.addEventListener("DOMContentLoaded", () => {
         i % 4 != 0 &&
         elements[i].textContent === elements[i - 1].textContent
       ) {
-        let sumResult =
-          Number(elements[i].textContent) + Number(elements[i - 1].textContent);
-        elements[i - 1].textContent = sumResult;
-        changeColor(elements[i - 1]);
-        elements[i].textContent = "";
-        changeColor(elements[i]);
-        score += sumResult;
-        displayScore.textContent = score;
+        rowPlus(i, false, 1);
         win();
         goRight();
       }
     }
+    rememberStep();
   }
 
   //объединяем в колонках при свайпе вверх
   function columnPlusUp() {
     for (let i = 0; i < 12; i++) {
       if (elements[i].textContent === elements[i + 4].textContent) {
-        let sumResult =
-          Number(elements[i].textContent) + Number(elements[i + 4].textContent);
-        elements[i + 4].textContent = sumResult;
-        changeColor(elements[i + 4]);
-        elements[i].textContent = "";
-        changeColor(elements[i]);
-        score += sumResult;
-        displayScore.textContent = score;
+        rowPlus(i, true, 4);
         win();
         goUp();
       }
     }
+    rememberStep();
   }
 
   //объединяем в колонках при свайпе вниз
   function columnPlusDown() {
     for (let i = 15; i > 3; i--) {
       if (elements[i].textContent === elements[i - 4].textContent) {
-        let sumResult =
-          Number(elements[i].textContent) + Number(elements[i - 4].textContent);
-        elements[i - 4].textContent = sumResult;
-        changeColor(elements[i - 4]);
-        elements[i].textContent = "";
-        changeColor(elements[i]);
-        score += sumResult;
-        displayScore.textContent = score;
+        rowPlus(i, false, 4);
         win();
         goDown();
       }
     }
+    rememberStep();
+  }
+
+  function rowPlus(index, direction, rows) {
+    let firstElement = Number(elements[index].textContent);
+    let secondElement;
+    let sumResult;
+    if (direction) {
+      secondElement = Number(elements[index + rows].textContent);
+      if (rows === 1) {
+        sumResult = firstElement + secondElement;
+        elements[index + rows].textContent = "";
+        elements[index].textContent = sumResult;
+      } else if (rows === 4) {
+        sumResult = firstElement + secondElement;
+        elements[index + rows].textContent = sumResult;
+        elements[index].textContent = "";
+      }
+      changeColor(elements[index + rows]);
+      changeColor(elements[index]);
+    } else {
+      secondElement = Number(elements[index - rows].textContent);
+      sumResult = firstElement + secondElement;
+      elements[index - rows].textContent = sumResult;
+      elements[index].textContent = "";
+      changeColor(elements[index]);
+      changeColor(elements[index - rows]);
+    }
+    score += sumResult;
+    displayScore.textContent = score;
   }
 
   //проверка на изменение результата
@@ -204,7 +205,7 @@ document.addEventListener("DOMContentLoaded", () => {
         check = false;
       }
     }
-    if (check === false) {
+    if (!check) {
       generateNumber();
       for (let i = 0; i < 16; i++) {
         checkElements[i] = elements[i].textContent;
@@ -212,7 +213,6 @@ document.addEventListener("DOMContentLoaded", () => {
     }
 
     console.log(checkElements);
-    rememberStep();
   }
 
   //проверка на проигрыш
@@ -293,16 +293,20 @@ document.addEventListener("DOMContentLoaded", () => {
   function controlKeys(e) {
     switch (e.keyCode) {
       case 37:
-        keyLeft();
+        goLeft();
+        rowPlusLeft();
         break;
       case 38:
-        keyUp();
+        goUp();
+        columnPlusUp();
         break;
       case 39:
-        keyRight();
+        goRight();
+        rowPlusRight();
         break;
       case 40:
-        keyDown();
+        goDown();
+        columnPlusDown();
         break;
       case 81:
         pressToLose();
@@ -314,39 +318,9 @@ document.addEventListener("DOMContentLoaded", () => {
         goBack();
         break;
     }
-  }
-  document.addEventListener("keyup", controlKeys);
 
-  //функции для нажатия кнопки стрелок
-
-  // вправо
-  function keyRight() {
-    goRight();
-    rowPlusRight();
     setTimeout(checkResult, 300);
   }
-
-  // влево
-  function keyLeft() {
-    goLeft();
-    rowPlusLeft();
-    setTimeout(checkResult, 300);
-  }
-
-  // вверх
-  function keyUp() {
-    goUp();
-    columnPlusUp();
-    setTimeout(checkResult, 300);
-  }
-
-  // вниз
-  function keyDown() {
-    goDown();
-    columnPlusDown();
-    setTimeout(checkResult, 300);
-  }
-
   function pressToLose() {
     elements[0].textContent = "4";
     elements[1].textContent = "4";
@@ -388,4 +362,9 @@ document.addEventListener("DOMContentLoaded", () => {
     changeColor();
     win();
   }
+  document.addEventListener("keyup", controlKeys);
+
+  //функции для нажатия кнопки стрелок
+
+  // вправо
 });
