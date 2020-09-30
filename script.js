@@ -111,8 +111,10 @@ document.addEventListener("DOMContentLoaded", () => {
     let newRow = direction ? nulls.concat(notNulls) : notNulls.concat(nulls);
 
     for (let j = 0; j < 4; j++) {
-      elements[index + axis * j].textContent = newRow[j];
-      changeColor(elements[index + axis * j]);
+      if (elements[index + axis * j].textContent != newRow[j]) {
+        elements[index + axis * j].textContent = newRow[j];
+        changeColor(elements[index + axis * j]);
+      }
     }
   }
 
@@ -126,7 +128,9 @@ document.addEventListener("DOMContentLoaded", () => {
         let sumResult =
           Number(elements[i].textContent) + Number(elements[i + 1].textContent);
         elements[i + 1].textContent = "";
+        changeColor(elements[i + 1]);
         elements[i].textContent = sumResult;
+        changeColor(elements[i]);
         score += sumResult;
         displayScore.textContent = score;
         win();
@@ -145,7 +149,9 @@ document.addEventListener("DOMContentLoaded", () => {
         let sumResult =
           Number(elements[i].textContent) + Number(elements[i - 1].textContent);
         elements[i - 1].textContent = sumResult;
+        changeColor(elements[i - 1]);
         elements[i].textContent = "";
+        changeColor(elements[i]);
         score += sumResult;
         displayScore.textContent = score;
         win();
@@ -161,7 +167,9 @@ document.addEventListener("DOMContentLoaded", () => {
         let sumResult =
           Number(elements[i].textContent) + Number(elements[i + 4].textContent);
         elements[i + 4].textContent = sumResult;
+        changeColor(elements[i + 4]);
         elements[i].textContent = "";
+        changeColor(elements[i]);
         score += sumResult;
         displayScore.textContent = score;
         win();
@@ -177,7 +185,9 @@ document.addEventListener("DOMContentLoaded", () => {
         let sumResult =
           Number(elements[i].textContent) + Number(elements[i - 4].textContent);
         elements[i - 4].textContent = sumResult;
+        changeColor(elements[i - 4]);
         elements[i].textContent = "";
+        changeColor(elements[i]);
         score += sumResult;
         displayScore.textContent = score;
         win();
