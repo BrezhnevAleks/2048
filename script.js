@@ -38,9 +38,9 @@ document.addEventListener("DOMContentLoaded", () => {
     rememberStep();
     console.log(stepBack[--stepCount]);
 
-    for (let i = 0; i < 16; i++) {
-      checkElements.push(elements[i].textContent);
-    }
+    elements.forEach((element) => {
+      checkElements.push(element.textContent);
+    });
   }
   createBoard();
 
@@ -62,19 +62,15 @@ document.addEventListener("DOMContentLoaded", () => {
 
   // свайп вправо
   function goRight() {
-    for (let i = 0; i < 16; i++) {
-      if (i % 4 === 0) {
-        getRow(i, true, 1);
-      }
+    for (let i = 0; i < 16; i += 4) {
+      getRow(i, true, 1);
     }
   }
 
   // свайп влево
   function goLeft() {
-    for (let i = 0; i < 16; i++) {
-      if (i % 4 === 0) {
-        getRow(i, false, 1);
-      }
+    for (let i = 0; i < 16; i += 4) {
+      getRow(i, false, 1);
     }
   }
 
@@ -104,12 +100,12 @@ document.addEventListener("DOMContentLoaded", () => {
     let empty = 4 - notNulls.length;
     let nulls = Array(empty).fill("");
     let newRow = direction ? nulls.concat(notNulls) : notNulls.concat(nulls);
-    for (let j = 0; j < 4; j++) {
-      if (elements[index + axis * j].textContent != newRow[j]) {
-        elements[index + axis * j].textContent = newRow[j];
-        changeColor(elements[index + axis * j]);
+    newRow.forEach((element, ind) => {
+      if (elements[index + axis * ind].textContent != element) {
+        elements[index + axis * ind].textContent = element;
+        changeColor(elements[index + axis * ind]);
       }
-    }
+    });
   }
 
   // объединяем в рядах при свайпе влево
@@ -172,7 +168,8 @@ document.addEventListener("DOMContentLoaded", () => {
         sumResult = firstElement + secondElement;
         elements[index + rows].textContent = "";
         elements[index].textContent = sumResult;
-      } else if (rows === 4) {
+      }
+      if (rows === 4) {
         sumResult = firstElement + secondElement;
         elements[index + rows].textContent = sumResult;
         elements[index].textContent = "";
@@ -195,16 +192,18 @@ document.addEventListener("DOMContentLoaded", () => {
   // проверка на изменение результата
   function checkResult() {
     let check = true;
-    for (let i = 0; i < 16; i++) {
-      if (checkElements[i] != elements[i].textContent) {
+
+    elements.forEach((element, index) => {
+      if (checkElements[index] != element.textContent) {
         check = false;
       }
-    }
+    });
+
     if (!check) {
       generateNumber();
-      for (let i = 0; i < 16; i++) {
-        checkElements[i] = elements[i].textContent;
-      }
+      elements.forEach((element, index) => {
+        checkElements[index] = element.textContent;
+      });
     }
 
     console.log(checkElements);
@@ -216,21 +215,20 @@ document.addEventListener("DOMContentLoaded", () => {
     let columnCheck = false;
     let winCheck = false;
     let zeros = 0;
-    for (let i = 0; i < elements.length; i++) {
-      if (!elements[i].textContent) {
+    elements.forEach((element) => {
+      if (!element.textContent) {
         zeros++;
       }
-      if (elements[i].textContent === "2048") {
+      if (element.textContent === "2048") {
         winCheck = true;
       }
-    }
+    });
+
     if (zeros === 0) {
-      for (let i = 0; i < 13; i++) {
-        if (i % 4 === 0) {
-          for (let j = i; j < i + 3; j++) {
-            if (elements[j].textContent === elements[j + 1].textContent) {
-              rowCheck = true;
-            }
+      for (let i = 0; i < 13; i += 4) {
+        for (let j = i; j < i + 3; j++) {
+          if (elements[j].textContent === elements[j + 1].textContent) {
+            rowCheck = true;
           }
         }
       }
@@ -263,10 +261,10 @@ document.addEventListener("DOMContentLoaded", () => {
 
   // шаг назад (кнопка b)
   function goBack() {
-    for (let i = 0; i < 16; i++) {
-      elements[i].textContent = stepBack[stepCount - 1][i];
-      changeColor(elements[i]);
-    }
+    elements.forEach((element, index) => {
+      element.textContent = stepBack[stepCount - 1][index];
+      changeColor(element);
+    });
     displayScore.textContent = stepBack[stepCount - 1][16];
     score = Number(stepBack[stepCount - 1][16]);
     stepBack.pop();
@@ -276,9 +274,9 @@ document.addEventListener("DOMContentLoaded", () => {
   // запомнить текущий шаг
   function rememberStep() {
     let step = [];
-    for (let i = 0; i < 16; i++) {
-      step.push(elements[i].textContent);
-    }
+    elements.forEach((element) => {
+      step.push(element.textContent);
+    });
     step.push(displayScore.textContent);
     stepBack.push(step);
     stepCount++;
@@ -333,7 +331,9 @@ document.addEventListener("DOMContentLoaded", () => {
     elements[13].textContent = "32";
     elements[14].textContent = "4";
     elements[15].textContent = "128";
-    changeColor();
+    elements.forEach((element) => {
+      changeColor(element);
+    });
     gameOver();
   }
 
@@ -354,7 +354,9 @@ document.addEventListener("DOMContentLoaded", () => {
     elements[13].textContent = "16";
     elements[14].textContent = "4";
     elements[15].textContent = "2";
-    changeColor();
+    elements.forEach((element) => {
+      changeColor(element);
+    });
     win();
   }
   document.addEventListener("keyup", controlKeys);
